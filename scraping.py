@@ -12,7 +12,7 @@ api= Namespace('reddit_scraping')
 class Reddit(Resource):
     def get(self, subreddit_name):
         subreddit = reddit.subreddit(subreddit_name)
-        top_posts = subreddit.top(limit=100)
+        top_posts = subreddit.top(limit=10)
         posts_data = []
         for post in top_posts:
             post_data = {
@@ -48,7 +48,8 @@ class Reddit(Resource):
                 }
                 comments_data.append(comment_data)
             # Save comments to a JSON file
-            with open('comments.json', 'w', encoding='utf8') as f:
+            filename= "comments-"+ url.split("/comments/")[1].split("/")[0] +".json"
+            with open(filename, 'w', encoding='utf8') as f:
                 json.dump(comments_data, f, ensure_ascii=False, indent=4)
             return ("task completed")
 

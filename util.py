@@ -52,7 +52,7 @@ class Media:
 
     #forall html.txt files, move them to html_dir
         for filename in os.listdir():
-            if filename.endswith(".txt"):
+            if filename.endswith(".txt") and filename != "requirements.txt":
                 if not os.path.exists(os.path.join(dir_html_path,filename)):
                     shutil.move(filename, dir_html_path)    
                     print(f"HTML file {filename} moved successfully.")
