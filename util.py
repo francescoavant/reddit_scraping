@@ -4,10 +4,11 @@ import os
 import shutil
 from pathlib import Path
 from video import *
-
+import uuid
+import zipfile
 class Media:
-    def media_down():
-        with open('posts.json', 'r', encoding='utf8') as f:
+    def media_down(postfilename):
+        with open(postfilename, 'r', encoding='utf8') as f:
             data = json.load(f)
             dir_photo_path="photo_dir"
             dir_video_path="video_dir"
@@ -15,6 +16,7 @@ class Media:
             Path(dir_photo_path).mkdir(parents=True, exist_ok=True)
             Path(dir_video_path).mkdir(parents=True, exist_ok=True)
             Path(dir_html_path).mkdir(parents=True, exist_ok=True)
+            id = str(uuid.uuid4())
             
             for item in data:
                 url = item["url"]
@@ -31,14 +33,7 @@ class Media:
                     url = item["url"]
                     file_path= get_html_from_url(url,c)
                     source_link = extract_source_link_from_html_file(file_path)
-                    #if source_link:
-                        #print(source_link)
                     download_video(source_link,c)
-                    #nomefile="video"+str(c)+".mp4"
-                    #wait for download before moving
-                    # if not os.path.exists(os.path.join(dir_video_path,nomefile)):
-                    #     shutil.move(nomefile, dir_video_path)    
-                    #     print(f"Video downloaded and moved successfully."
                     c+=1
                     
     #forall jpg files, move them to photo_dir
@@ -49,6 +44,8 @@ class Media:
                     print(f"Image {filename} moved successfully.")
                 else:
                     print(f"Image {filename} already exists in {dir_photo_path}")
+                    #delete files that already exist in the directory
+                    os.remove(filename)
 
     #forall html.txt files, move them to html_dir
         for filename in os.listdir():
@@ -58,6 +55,8 @@ class Media:
                     print(f"HTML file {filename} moved successfully.")
                 else:
                     print(f"HTML file {filename} already exists in {dir_html_path}")
+                    #delete files that already exist in the directory
+                    os.remove(filename)
 
     #forall video.mp4 files, move them to video_dir
         for filename in os.listdir():
@@ -67,6 +66,12 @@ class Media:
                     print(f"Video {filename} moved successfully.")
                 else:
                     print(f"Video {filename} already exists in {dir_video_path}")
-    
-
-#Media.image_down()
+                    #delete files that already exist in the directory
+                    os.remove(filename)
+        os.mkdir(id)
+        shutil.move(dir_photo_path, id)
+        shutil.move(dir_video_path, id)
+        shutil.move(dir_html_path, id)
+        shutil.move(postfilename, id)
+        shutil.make_archive(id, 'zip', id)
+        shutil.rmtree(id)

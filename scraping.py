@@ -4,6 +4,7 @@ from connection import *
 from flask_restx import Resource, Namespace
 from datetime import datetime
 from util import *
+import uuid
 
 api= Namespace('reddit_scraping')
 
@@ -25,9 +26,11 @@ class Reddit(Resource):
             }
             posts_data.append(post_data)
         #result = save_json(posts_data)
-        with open('posts.json', 'w', encoding='utf8') as f:
+        id = str(uuid.uuid4())
+        postfilename= "posts-"+ id +".json"
+        with open(postfilename, 'w', encoding='utf8') as f:
                 json.dump(posts_data, f, ensure_ascii=False, indent=4)
-        Media.media_down()
+        Media.media_down(postfilename)
         return ("task completed")
 
 @api.route('/reddit/comments/<path:url>')
